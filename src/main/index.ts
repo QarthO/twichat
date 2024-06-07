@@ -38,6 +38,9 @@ function createWindow(): void {
     event.preventDefault()
   })
 
+  // disables resizing of window
+  mainWindow.setResizable(false)
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
