@@ -32,6 +32,12 @@ function createWindow(): void {
 
   mainWindowState.manage(mainWindow)
 
+  // disables right click context menu (weird hack for frameless window)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  mainWindow.on('system-context-menu', (event, _point) => {
+    event.preventDefault()
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
