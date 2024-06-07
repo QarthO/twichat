@@ -2,20 +2,35 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import windowStateKeeper from 'electron-window-state'
+
+let mainWindow: BrowserWindow
 
 function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
+  // Used to remember window size and position between sessions
+  const mainWindowState = windowStateKeeper({
+    file: 'desktop-window-state.json',
+    defaultWidth: 300,
+    defaultHeight: 450
   })
+
+  mainWindow = new BrowserWindow({
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    show: false,
+    // backgroundColor: global.colors.BACKGROUND,
+    frame: true,
+    icon: icon,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: join(__dirname, '../preload/index.js')
+    }
+  });
+
+  mainWindowState.manage(mainWindow)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
